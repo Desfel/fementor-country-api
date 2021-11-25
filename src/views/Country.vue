@@ -209,7 +209,7 @@ export default {
 
       img {
         border-radius: 5px;
-        max-width: 660px;
+        max-width: 100%;
       }
     }
 
@@ -262,7 +262,8 @@ export default {
         }
 
         .info-type,
-        .info-list {
+        .info-list,
+        p {
           font-weight: 300;
           font-size: 16px;
           line-height: 32px;
@@ -270,6 +271,10 @@ export default {
           @media (max-width: 767px) {
             font-size: 14px;
             line-height: 32px;
+          }
+
+          >>> span {
+            font-weight: 600;
           }
         }
 
@@ -283,10 +288,7 @@ export default {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-
-        @media (max-width: 767px) {
-          margin-bottom: -10px;
-        }
+        margin-bottom: -10px;
 
         .border-title {
           font-weight: 600;
@@ -309,11 +311,11 @@ export default {
           box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.104931);
           border-radius: 2px;
           cursor: pointer;
+          margin-bottom: 10px;
 
           @media (max-width: 767px) {
             font-size: 12px;
             line-height: 16px;
-            margin-bottom: 10px;
           }
 
           &:hover {
