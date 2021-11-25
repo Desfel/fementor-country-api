@@ -9,3 +9,22 @@ $navbar-height: 3.6rem;
 $navbar-color: #fff;
 $navbar-offline-color: #333;
 $navbar-link-color: #2c3e50;
+
+
+:root {
+  --elementsColor: hsl(0, 0%, 100%);
+  --bgColor: hsl(0, 0%, 98%);
+  --textColor: hsl(200, 15%, 8%);
+  --inputColor: hsl(0, 0%, 52%);
+}
+
+.theme-dark {
+  --elementsColor: hsl(209, 23%, 22%);
+  --bgColor: hsl(207, 26%, 17%);
+  --textColor: hsl(0, 0%, 100%);
+  --inputColor: hsl(0, 0%, 100%);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;600;800&display=swap');
+$textFont: 'Nunito Sans', sans-serif;
+

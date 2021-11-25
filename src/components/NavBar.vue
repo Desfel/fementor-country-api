@@ -1,51 +1,32 @@
 <template>
-  <header class="navbar" :class="{ offline: !networkOnLine }">
-    <router-link to="/home">
-      <img alt="logo-bento" class="logo" src="@/assets/img/bento-starter.svg" />
-      <span class="site-name title-desktop">{{ appTitle }}</span>
-      <span class="site-name title-mobile">{{ appShortTitle }}</span>
-    </router-link>
-    <div class="links">
-      <nav class="nav-links">
-        <div class="nav-item">
-          <router-link to="/products">Products</router-link>
-        </div>
-        <div v-if="!isUserLoggedIn && networkOnLine" class="nav-item">
-          <router-link to="/login">Login</router-link>
-        </div>
-        <div
-          v-if="isUserLoggedIn && networkOnLine"
-          class="nav-item logout-item"
-          @click="logout"
-        >
-          <a>Logout</a>
-        </div>
-        <div v-if="!networkOnLine" class="nav-item offline-label">Offline</div>
-      </nav>
+  <header class="navbar">
+    <h1>Where in the world?</h1>
 
-      <img
-        v-if="isUserLoggedIn && networkOnLine"
-        class="user-picture can-hide"
-        :src="user.photoURL"
-        alt="Avatar"
-      />
-    </div>
+    <a href="#" class="theme-toggler" @click="toggleTheme">
+      <svg width="18" height="17" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.5532 11.815C8.66857 11.815 5.51929 8.92783 5.51929 5.36821C5.51929 4.0253 5.96679 2.78158 6.73143 1.75C3.69036 2.69515 1.5 5.33122 1.5 8.43807C1.5 12.3385 4.94929 15.5 9.20357 15.5C12.5929 15.5 15.4696 13.4932 16.5 10.7045C15.375 11.4048 14.0161 11.815 12.5532 11.815Z" fill="white" stroke="#111517" stroke-width="1.25"/>
+      </svg>
+      Dark Mode
+    </a>
   </header>
 </template>
 
 <script>
-import firebase from 'firebase/app'
-import { mapGetters, mapState } from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
+  data() {
+    return {
+      isDarkTheme: false
+    }
+  },
   computed: {
-    ...mapGetters('authentication', ['isUserLoggedIn']),
-    ...mapState('authentication', ['user']),
     ...mapState('app', ['networkOnLine', 'appTitle', 'appShortTitle'])
   },
   methods: {
-    async logout() {
-      await firebase.auth().signOut()
+    toggleTheme() {
+      this.isDarkTheme = !this.isDarkTheme
+      this.$emit('toggleTheme', this.isDarkTheme)
     }
   }
 }
@@ -55,133 +36,48 @@ export default {
 @import '@/theme/variables.scss';
 
 .navbar {
+  display: flex;
+  width: 100%;
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 20;
-  right: 0;
-  height: $navbar-height;
-  background-color: $navbar-color;
-  box-sizing: border-box;
-  border-bottom: 1px solid #eaecef;
-  padding: 0.7rem 1.5rem;
-  line-height: 2.2rem;
+  padding: 24px 80px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.0562443);
+  background: var(--elementsColor);
 
-  a {
+  @media (max-width: 767px) {
+    padding: 30px 16px;
+  }
+
+  h1 {
+    font-weight: 800;
+    font-size: 24px;
+    line-height: 33px;
+
+    @media (max-width: 767px) {
+      font-size: 14px;
+      line-height: 20px;
+    }
+  }
+
+  .theme-toggler {
     display: flex;
     align-items: center;
-  }
-
-  .title-desktop {
-    display: inline;
-  }
-
-  .title-mobile {
-    display: none;
-  }
-
-  @media (max-width: 500px) {
-    padding: 0.7rem 0.7rem;
-
-    .can-hide {
-      display: none;
-    }
-
-    .title-desktop {
-      display: none;
-    }
-
-    .title-mobile {
-      display: block;
-    }
-  }
-
-  .site-name {
-    font-size: 1.3rem;
+    margin-left: auto;
     font-weight: 600;
-    color: #2c3e50;
-    position: relative;
-  }
+    font-size: 16px;
+    line-height: 22px;
 
-  .logo {
-    height: 24px;
-    padding-right: 8px;
-  }
+    @media (max-width: 767px) {
+      font-size: 12px;
+      line-height: 16px;
+    }
 
-  .links {
-    padding-left: 1.5rem;
-    box-sizing: border-box;
-    white-space: nowrap;
-    font-size: 0.9rem;
-    position: absolute;
-    right: 1.5rem;
-    top: 0.7rem;
-    display: flex;
+    svg {
+      margin-right: 10px;
 
-    .nav-links {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      .nav-item {
-        position: relative;
-        display: inline-block;
-        margin-left: 1.5rem;
-        line-height: 2.2rem;
-
-        &:first-child {
-          margin-left: 0;
-        }
-
-        a {
-          font-weight: 500;
-          font-size: 0.9rem;
-          text-decoration: none;
-          color: $navbar-link-color;
-          border-color: #2c3e50;
-          line-height: 1.4rem;
-          display: inline-block;
-          cursor: pointer;
-        }
-
-        @mixin activatedLink() {
-          margin-bottom: -2px;
-          border-bottom: 2px solid $vue-color;
-        }
-
-        .router-link-active {
-          @include activatedLink;
-        }
-
-        @media (hover) {
-          :hover {
-            @include activatedLink;
-          }
-        }
+      path {
+        stroke: var(--textColor);
       }
     }
-  }
-
-  &.offline {
-    background: $navbar-offline-color;
-    .links .nav-links .nav-item a,
-    .site-name {
-      color: white;
-    }
-  }
-
-  .user-picture {
-    max-height: 32px;
-    margin-left: 1.5rem;
-    border-radius: 50%;
-  }
-
-  .offline-label {
-    padding: 0px 10px;
-    border: 1px solid white;
-    border-radius: 5px;
-    color: white;
-    margin-left: 1.5rem;
   }
 }
 </style>
