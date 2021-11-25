@@ -218,6 +218,7 @@ export default {
       display: flex;
       flex-direction: column;
       max-width: 500px;
+      width: 100%;
 
       @media (max-width: 1024px) {
         margin-left: 0;
