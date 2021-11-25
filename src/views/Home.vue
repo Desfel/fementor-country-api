@@ -27,7 +27,9 @@
 
     <section class="countries-wrapper">
       <div class="country-card" v-for="country in countriesArray" v-bind:key="country.name">
-        <router-link class="country-link" :to="{ name: 'country', params: { code: country.alpha3Code }}"></router-link>
+        <router-link class="country-link" :to="{ name: 'country', params: { code: country.alpha3Code }}">
+          {{ country.name }}
+        </router-link>
         <img :src="country.flag" :alt="country.name" />
 
         <div class="country-content">
@@ -359,6 +361,7 @@ export default {
         left: 0;
         width: 100%;
         height: 100%;
+        opacity: 0;
       }
 
       img {
