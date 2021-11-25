@@ -188,6 +188,7 @@ export default {
   .content-section {
     display: flex;
     align-items: center;
+    justify-content: center;
     width: 100%;
     margin-top: 80px;
 
@@ -216,8 +217,7 @@ export default {
     .content-wrapper {
       display: flex;
       flex-direction: column;
-      flex-grow: 1;
-      margin-left: auto;
+      max-width: 500px;
 
       @media (max-width: 1024px) {
         margin-left: 0;

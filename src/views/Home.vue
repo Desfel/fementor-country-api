@@ -101,7 +101,7 @@ export default {
       this.dropdownOpenState = false
 
       if(trimmedValue !== '') {
-        axios.get(`https://restcountries.com/v2/name/${trimmedValue}?fields=flag,name,population,region,capital`)
+        axios.get(`https://restcountries.com/v2/name/${trimmedValue}?fields=flag,name,population,region,capital,alpha3Code`)
           .then(response => {
             if(response.data.length > 0) {
               this.countriesArray = response.data
@@ -119,7 +119,7 @@ export default {
       this.dropdownOpenState = false
       this.currentRegion = region
 
-      axios.get(`https://restcountries.com/v2/region/${region}?fields=flag,name,population,region,capital`)
+      axios.get(`https://restcountries.com/v2/region/${region}?fields=flag,name,population,region,capital,alpha3Code`)
         .then(response => {
           if(response.data.length > 0) {
             this.countriesArray = response.data
@@ -259,8 +259,15 @@ export default {
 
     .regions-dropdown {
       position: absolute;
+      min-width: 200px;
       width: 100%;
       top: 45px;
+      right:0;
+
+      @media (max-width: 767px) {
+        right: auto;
+        left: 0;
+      }
 
       display: flex;
       flex-direction: column;
@@ -268,6 +275,7 @@ export default {
       padding: 16px 24px;
       opacity: 0;
       pointer-events: none;
+      z-index: 999;
 
       &.is-open {
         opacity: 1;
