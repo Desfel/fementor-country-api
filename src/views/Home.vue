@@ -1,41 +1,40 @@
 <template>
   <div class="page-wrapper">
     <section class="form-section">
-        <form class="country-search" action="#" method="POST">
+        <form class="country-search" action="#" method="POST" @submit="searchCountry">
           <div class="input-cell">
-            <svg width="18" height="18" viewBox="-1 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg @click="searchCountry" width="18" height="18" viewBox="-1 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd" d="M12.5 11H11.7L11.4 10.7C12.4 9.6 13 8.1 13 6.5C13 2.9 10.1 0 6.5 0C2.9 0 0 2.9 0 6.5C0 10.1 2.9 13 6.5 13C8.1 13 9.6 12.4 10.7 11.4L11 11.7V12.5L16 17.5L17.5 16L12.5 11ZM6.5 11C4 11 2 9 2 6.5C2 4 4 2 6.5 2C9 2 11 4 11 6.5C11 9 9 11 6.5 11Z" fill="#848484"/>
             </svg>
 
-            <input name="countryName" placeholder="Search for a country…" />
+            <input v-model="searchValue" name="countryName" placeholder="Search for a country…" />
           </div>
         </form>
 
         <div class="region-select-wrapper">
           <div class="region-main input-cell" @click="openDropdown">
-            <p>Filter by Region</p>
+            <p v-text="currentRegion">Filter by Region</p>
             <svg :class="{'is-open':dropdownOpenState}" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd" d="M9.45 3.45L6 6.9L2.55 3.45L1.5 4.5L6 9L10.5 4.5L9.45 3.45Z" fill="black"/>
             </svg>
           </div>
 
           <div class="regions-dropdown input-cell" :class="{'is-open':dropdownOpenState}">
-            <p>Canada</p>
-            <p>Japan</p>
-            <p>Switzerland</p>
+            <p v-for="region in regionArray" v-bind:key="region" v-text="region" @click="searchByRegion(region)"></p>
           </div>
         </div>
     </section>
 
     <section class="countries-wrapper">
-      <div class="country-card" v-for="n in 8" v-bind:key="n">
-        <img src="@/assets/img/temp-flag.jpg" alt="Germany" />
+      <div class="country-card" v-for="country in countriesArray" v-bind:key="country.name">
+        <router-link class="country-link" :to="{ name: 'country', params: { code: country.alpha3Code }}"></router-link>
+        <img :src="country.flag" :alt="country.name" />
 
         <div class="country-content">
-          <h2>Germany</h2>
-          <p><span>Population:</span> 81,770,900</p>
-          <p><span>Region:</span> Europe</p>
-          <p><span>Capital:</span> Berlin</p>
+          <h2 v-text="country.name">Germany</h2>
+          <p v-html="`<span>Population:</span> ${country.population}`"></p>
+          <p v-html="`<span>Region:</span> ${country.region}`"></p>
+          <p v-html="`<span>Capital:</span> ${country.capital}`"></p>
         </div>
       </div>
     </section>
@@ -44,11 +43,17 @@
 
 <script>
 import { mapState } from 'vuex'
+import axios from 'axios';
 
 export default {
   data() {
     return {
-      dropdownOpenState: false
+      searchValue: '',
+      currentRegion: 'Filter by Region',
+      dropdownOpenState: false,
+      countriesArray: [],
+      regionArray: [],
+      errors: []
     }
   },
   head() {
@@ -65,9 +70,67 @@ export default {
       ]
     }
   },
+  created() {
+    axios
+      .get('https://restcountries.com/v2/all?fields=flag,name,population,region,capital,alpha3Code')
+      .then(response => {
+        this.countriesArray = response.data
+
+        this.countriesArray.forEach(country => {
+          if(this.regionArray.indexOf(country.region) === -1) {
+            this.regionArray.push(country.region)
+          }
+        })
+
+        this.regionArray.sort()
+      })
+      .catch(e => {
+        this.countriesArray = []
+        this.errors.push(e)
+      })
+  },
   methods: {
     openDropdown() {
       this.dropdownOpenState = !this.dropdownOpenState
+    },
+    searchCountry(event) {
+      event.preventDefault()
+      const trimmedValue = this.searchValue.trim()
+      this.searchValue = ''
+      this.currentRegion = 'Filter by Region'
+      this.dropdownOpenState = false
+
+      if(trimmedValue !== '') {
+        axios.get(`https://restcountries.com/v2/name/${trimmedValue}?fields=flag,name,population,region,capital`)
+          .then(response => {
+            if(response.data.length > 0) {
+              this.countriesArray = response.data
+            } else {
+              this.countriesArray = []
+            }
+          })
+          .catch(e => {
+            this.countriesArray = []
+            this.errors.push(e)
+          })
+      }
+    },
+    searchByRegion(region) {
+      this.dropdownOpenState = false
+      this.currentRegion = region
+
+      axios.get(`https://restcountries.com/v2/region/${region}?fields=flag,name,population,region,capital`)
+        .then(response => {
+          if(response.data.length > 0) {
+            this.countriesArray = response.data
+          } else {
+            this.countriesArray = []
+          }
+        })
+        .catch(e => {
+          this.countriesArray = []
+          this.errors.push(e)
+        })
     }
   },
   computed: mapState('app', ['appTitle'])
@@ -80,6 +143,11 @@ export default {
 .page-wrapper {
   display: flex;
   flex-direction: column;
+  padding: 128px 80px 45px;
+
+  @media (max-width: 767px) {
+    padding: 104px 0 65px;
+  }
 
   .form-section {
     display: flex;
@@ -137,6 +205,7 @@ export default {
       width: 100%;
 
       svg {
+        cursor: pointer;
         margin-right: 24px;
         stroke: var(--inputColor);
         transition: none;
@@ -230,6 +299,7 @@ export default {
   .countries-wrapper {
     display: flex;
     flex-wrap: wrap;
+    align-items: stretch;
     margin-bottom: -30px;
 
     @media (max-width: 767px) {
@@ -237,6 +307,7 @@ export default {
     }
 
     .country-card {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -274,14 +345,23 @@ export default {
         width: 100%;
       }
 
+      .country-link {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
       img {
         border-radius: 5px 5px 0 0;
-        width: 100%;
+        max-width: 100%;
       }
 
       .country-content {
         display: flex;
         flex-direction: column;
+        margin-top: auto;
         padding: 24px;
 
         h2 {
@@ -300,7 +380,7 @@ export default {
             margin-bottom: 8px;
           }
 
-          span {
+          >>> span {
             font-weight: 600;
           }
         }

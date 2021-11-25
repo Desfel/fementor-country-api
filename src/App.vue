@@ -76,15 +76,10 @@ body {
       .page-wrapper {
         width: 100%;
         height: 100%;
-        padding: 128px 80px 45px;
         min-height: 100vh;
         margin: auto;
         background: var(--bgColor);
         transition: background .3s ease-in-out;
-
-        @media (max-width: 767px) {
-          padding: 104px 0 65px;
-        }
       }
     }
   }
