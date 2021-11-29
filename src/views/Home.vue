@@ -30,7 +30,9 @@
         <router-link class="country-link" :to="{ name: 'country', params: { code: country.alpha3Code }}">
           {{ country.name }}
         </router-link>
-        <img :src="country.flag" :alt="country.name" />
+        <div class="country-flag">
+          <img :src="country.flag" :alt="country.name" />
+        </div>
 
         <div class="country-content">
           <h2 v-text="country.name">Germany</h2>
@@ -313,6 +315,7 @@ export default {
     margin-bottom: -30px;
 
     @media (max-width: 767px) {
+      flex-direction: column;
       padding: 0 55px;
     }
 
@@ -364,9 +367,18 @@ export default {
         opacity: 0;
       }
 
-      img {
+      .country-flag {
         border-radius: 5px 5px 0 0;
-        max-width: 100%;
+        width: 100%;
+        height: 50%;
+        //padding-top: 10%;
+
+        img {
+          border-radius: 5px 5px 0 0;
+          object-fit: cover;
+          width: 100%;
+          height: 100%;
+        }
       }
 
       .country-content {
